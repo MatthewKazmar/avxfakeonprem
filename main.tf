@@ -108,7 +108,7 @@ echo "s/:hagw:/${var.transit_gw_ips[1]}/g"
 echo "s/:psk:/${nonsensitive(resource.aviatrix_transit_external_device_conn.fake_onprem.pre_shared_key)}/g"
 echo "s/:remote-as:/${var.fake_onprem_asn}/g"
 echo "s/:myprivateip:/$(ec2metadata --local-ipv4)/g"
-echo "s/:mypublicip:/${aws_eip.vpn_vm_eip.address}/g"
+echo "s/:mypublicip:/$(curl ifconfig.me)/g"
 echo "s/:gw-tun:/${local.vti_gw}/g"
 echo "s/:hagw-tun:/${local.vti_hagw}/g"
 } >/tmp/vars.$$

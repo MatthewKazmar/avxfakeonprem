@@ -18,4 +18,5 @@ locals {
   vti_hagw                = "${local.remote_tunnel_cidr[1]} ${local.local_tunnel_cidr[1]}"
   vpn_subnet              = cidrsubnet(var.cidr, 1, 0)
   test_subnet             = cidrsubnet(var.cidr, 1, 1)
+  psk                     = nonsensitive(resource.aviatrix_transit_external_device_conn.fake_onprem.pre_shared_key)
 }
