@@ -105,7 +105,7 @@ module "vpn_vm" {
 echo "s/:gwname:/${var.transit_gw_name}/g"
 echo "s/:gw:/${var.transit_gw_ips[0]}/g"
 echo "s/:hagw:/${var.transit_gw_ips[1]}/g"
-echo "s/:psk:/${nonsensitive(resource.aviatrix_transit_external_device_conn.fake_onprem.pre_shared_key)}/g"
+echo "s/:psk:/${local.psk}/g"
 echo "s/:remote-as:/${var.fake_onprem_asn}/g"
 echo "s/:myprivateip:/$(ec2metadata --local-ipv4)/g"
 echo "s/:mypublicip:/$(curl ifconfig.me)/g"
