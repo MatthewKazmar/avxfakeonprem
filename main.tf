@@ -157,7 +157,7 @@ systemctl start frr
 # Configure BGP
 frrcmds=$(cat << EOS
 configure
-ip route ${local.test_subnet} ${cidrhost(local.vm_subnet, 1)}
+ip route ${local.test_subnet} ${cidrhost(local.vpn_subnet, 1)}
 router bgp ${var.fake_onprem_asn}
 neighbor ${local.remote_tunnel_cidr[0]} remote-as ${var.transit_gw_asn}
 neighbor ${local.remote_tunnel_cidr[1]} remote-as ${var.transit_gw_asn}
