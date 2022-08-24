@@ -10,19 +10,19 @@ resource "aviatrix_transit_external_device_conn" "fake_onprem" {
   connection_type   = "bgp"
   tunnel_protocol   = "IPSec"
   enable_ikev2      = true
-  bgp_local_as_num  = var.transit_gateway_asn
+  bgp_local_as_num  = var.transit_gw_asn
   bgp_remote_as_num = var.fake_onprem_asn
   remote_gateway_ip = aws_eip.vpn_vm_eip.address
 }
 
 # Set up the tunnel IPs for the ipsec-vti.sh script
 locals {
-  local_tunnel_cidr = split(",", aviatrix_transit_external_device_conn.fake_onprem.local_tunnel_cidr)
+  local_tunnel_cidr  = split(",", aviatrix_transit_external_device_conn.fake_onprem.local_tunnel_cidr)
   remote_tunnel_cidr = split(",", aviatrix_transit_external_device_conn.fake_onprem.remote_tunnel_cidr)
-  vti_gw = "${local.remote_tunnel_cidr[0]} ${local.local_tunnel_cidr[0]}"
-  vti_hagw = "${local.remote_tunnel_cidr[1]} ${local.local_tunnel_cidr[1]}"
-  vpn_subnet = cidrsubnet(var.cidr, 1, 0)
-  test_subnet = cidrsubnet(var.cidr, 1, 1)
+  vti_gw             = "${local.remote_tunnel_cidr[0]} ${local.local_tunnel_cidr[0]}"
+  vti_hagw           = "${local.remote_tunnel_cidr[1]} ${local.local_tunnel_cidr[1]}"
+  vpn_subnet         = cidrsubnet(var.cidr, 1, 0)
+  test_subnet        = cidrsubnet(var.cidr, 1, 1)
 }
 
 # AWS VPC for StrongSwan/FRR
@@ -33,7 +33,7 @@ module "fake_onprem_vpc" {
   cidr = var.cidr
 
   azs            = ["${var.aws_region}b"]
-  public_subnets = [local.vpn_subnet,local.test_subnet]
+  public_subnets = [local.vpn_subnet, local.test_subnet]
 
   enable_nat_gateway = false
   enable_vpn_gateway = false
@@ -95,13 +95,13 @@ module "vpn_vm" {
 
   name = "${var.prefix}-vpn"
 
-  ami                         = "ami-052efd3df9dad4825" #Ubuntu 22.04
-  instance_type               = "t3.micro"
-  key_name                    = var.key_name
-  monitoring                  = true
-  vpc_security_group_ids      = [aws_security_group.vpn_vm_sg.id]
-  subnet_id                   = module.fake_onprem_vpc.public_subnets[0]
-  source_dest_check           = false
+  ami                    = "ami-052efd3df9dad4825" #Ubuntu 22.04
+  instance_type          = "t3.micro"
+  key_name               = var.key_name
+  monitoring             = true
+  vpc_security_group_ids = [aws_security_group.vpn_vm_sg.id]
+  subnet_id              = module.fake_onprem_vpc.public_subnets[0]
+  source_dest_check      = false
 
   depends_on = [
     aws_security_group.vpn_vm_sg,
@@ -111,9 +111,9 @@ module "vpn_vm" {
   user_data = <<EOF
 # Create sed template for ipsec.conf and frr.conf
 {
-echo "s/:gwname:/${var.transit_gateway_name}/g"
-echo "s/:gw:/${var.transit_gateway_ips[0]}/g"
-echo "s/:hagw:/${var.transit_gateway_ips[1]}/g"
+echo "s/:gwname:/${var.transit_gw_name}/g"
+echo "s/:gw:/${var.transit_gw_ips[0]}/g"
+echo "s/:hagw:/${var.transit_gw_ips[1]}/g"
 echo "s/:psk:/${resource.aviatrix_transit_external_device_conn.fake_onprem.pre_shared_key}/g"
 echo "s/:remote-as:/${var.fake_onprem_asn}/g"
 echo "s/:myprivateip:/$(ec2metadata --local-ipv4)/g"
@@ -157,10 +157,10 @@ systemctl start frr
 # Configure BGP
 frrcmds=$(cat << EOS
 configure
-ip route ${local.test_subnet} ${cidrhost(local.vm_subnet,1)}
+ip route ${local.test_subnet} ${cidrhost(local.vm_subnet, 1)}
 router bgp ${var.fake_onprem_asn}
-neighbor ${local.remote_tunnel_cidr[0]} remote-as ${var.transit_gateway_asn}
-neighbor ${local.remote_tunnel_cidr[1]} remote-as ${var.transit_gateway_asn}
+neighbor ${local.remote_tunnel_cidr[0]} remote-as ${var.transit_gw_asn}
+neighbor ${local.remote_tunnel_cidr[1]} remote-as ${var.transit_gw_asn}
 address-family ipv4 unicast
 network ${local.vpn_subnet}
 network ${local.test_subnet}
@@ -173,8 +173,8 @@ EOF
 }
 
 resource "aws_eip_association" "vpn_vm_eip_association" {
-    instance_id = module.vpn_vm.id
-    allocation_id = aws_eip.vpn_vm_eip.id
+  instance_id   = module.vpn_vm.id
+  allocation_id = aws_eip.vpn_vm_eip.id
 }
 
 # Test VM
