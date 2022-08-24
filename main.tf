@@ -2,6 +2,11 @@
 # Do this first so we can build the Avx VPN Tunnel
 resource "aws_eip" "vpn_vm_eip" {}
 
+resource "random_string" "psk" {
+  length = 16
+  special = false
+}
+
 # Aviatrix BGPoIPSec External Connection
 resource "aviatrix_transit_external_device_conn" "fake_onprem" {
   vpc_id            = var.transit_vpc_id
@@ -13,6 +18,7 @@ resource "aviatrix_transit_external_device_conn" "fake_onprem" {
   bgp_local_as_num  = var.transit_gw_asn
   bgp_remote_as_num = var.fake_onprem_asn
   remote_gateway_ip = aws_eip.vpn_vm_eip.address
+  pre_shared_key = resource.random_string.result
 }
 
 # AWS VPC for StrongSwan/FRR
@@ -105,7 +111,7 @@ module "vpn_vm" {
 echo "s/:gwname:/${var.transit_gw_name}/g"
 echo "s/:gw:/${var.transit_gw_ips[0]}/g"
 echo "s/:hagw:/${var.transit_gw_ips[1]}/g"
-echo "s/:psk:/${local.psk}/g"
+echo "s/:psk:/${resource.random_string.result}/g"
 echo "s/:remote-as:/${var.fake_onprem_asn}/g"
 echo "s/:myprivateip:/$(ec2metadata --local-ipv4)/g"
 echo "s/:mypublicip:/$(curl ifconfig.me)/g"
