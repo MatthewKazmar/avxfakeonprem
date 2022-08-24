@@ -94,6 +94,7 @@ module "vpn_vm" {
   source_dest_check      = false
 
   depends_on = [
+    aws_eip.vpn_vm_eip,
     aws_security_group.vpn_vm_sg,
     module.fake_onprem_vpc
   ]
@@ -104,7 +105,7 @@ module "vpn_vm" {
 echo "s/:gwname:/${var.transit_gw_name}/g"
 echo "s/:gw:/${var.transit_gw_ips[0]}/g"
 echo "s/:hagw:/${var.transit_gw_ips[1]}/g"
-echo "s/:psk:/${resource.aviatrix_transit_external_device_conn.fake_onprem.pre_shared_key}/g"
+echo "s/:psk:/${nonsensitive(resource.aviatrix_transit_external_device_conn.fake_onprem.pre_shared_key)}/g"
 echo "s/:remote-as:/${var.fake_onprem_asn}/g"
 echo "s/:myprivateip:/$(ec2metadata --local-ipv4)/g"
 echo "s/:mypublicip:/${aws_eip.vpn_vm_eip.address}/g"
