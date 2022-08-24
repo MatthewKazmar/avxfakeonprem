@@ -1,4 +1,6 @@
 #!/bin/bash
+
+# Mostly, really entirely based on https://cloud.google.com/community/tutorials/using-cloud-vpn-with-strongswan
 set -o nounset
 set -o errexit
 
@@ -13,10 +15,9 @@ VTI_LOCAL=${3}
 
 LOCAL_IF="${PLUTO_INTERFACE}"
 VTI_IF="vti${VTI_TUNNEL_ID}"
-# GCP's MTU is 1460, so it's hardcoded
-GCP_MTU="1460"
+CSP_MTU="1500"
 # ipsec overhead is 73 bytes, we need to compute new mtu.
-VTI_MTU=$((GCP_MTU-73))
+VTI_MTU=$((CSP_MTU-73))
 
 case "${PLUTO_VERB}" in
     up-client)
