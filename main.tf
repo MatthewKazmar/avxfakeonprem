@@ -44,27 +44,27 @@ module "fake_onprem_vpc" {
 resource "aws_security_group" "vpn_vm_sg" {
   name        = "${var.prefix}-vpn-vm-sg"
   description = "allow IKE/NAT-T/ssh/routed traffic"
-  vpc_id      = module.fake_onprem_vpc.id
+  vpc_id      = module.fake_onprem_vpc.vpc_id
 
   ingress {
     from_port   = 500
     to_port     = 500
     protocol    = "UDP"
-    cidr_blocks = var.transit_gateway_ips
+    cidr_blocks = var.transit_gw_ips
   }
 
   ingress {
     from_port   = 4500
     to_port     = 4500
     protocol    = "UDP"
-    cidr_blocks = var.transit_gateway_ips
+    cidr_blocks = var.transit_gw_ips
   }
 
   ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "TCP"
-    cidr_blocks = var.admin_cidr
+    cidr_blocks = var.admin_cidrs
   }
 
   ingress {
@@ -78,13 +78,13 @@ resource "aws_security_group" "vpn_vm_sg" {
 resource "aws_security_group" "test_vm_sg" {
   name        = "${var.prefix}-test-vm-sg"
   description = "allow ssh"
-  vpc_id      = module.fake_onprem_vpc.id
+  vpc_id      = module.fake_onprem_vpc.vpc_id
 
   ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "TCP"
-    cidr_blocks = var.admin_cidr
+    cidr_blocks = var.admin_cidrs
   }
 }
 
@@ -173,7 +173,7 @@ EOF
 }
 
 resource "aws_eip_association" "vpn_vm_eip_association" {
-    instance = module.vpn_vm.id
+    instance_id = module.vpn_vm.id
     allocation_id = aws_eip.vpn_vm_eip.id
 }
 
