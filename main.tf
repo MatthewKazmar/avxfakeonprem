@@ -88,8 +88,6 @@ resource "aws_security_group" "test_vm_sg" {
   }
 }
 
-resource "aws_eip" "vpn_vm_eip" {}
-
 # Vpn VM
 module "vpn_vm" {
   source  = "terraform-aws-modules/ec2-instance/aws"
@@ -177,16 +175,6 @@ EOF
 resource "aws_eip_association" "vpn_vm_eip_association" {
     instance = module.vpn_vm.id
     allocation_id = aws_eip.vpn_vm_eip.id
-}
-
-resource "aws_eip" "vpn_vm_eip" {
-  vpc      = true
-  instance = module.vpn_vm.id
-
-  depends_on = [
-    module.vpn_vm,
-    module.fake_onprem_vpc
-  ]
 }
 
 # Test VM
