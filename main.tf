@@ -17,7 +17,7 @@ resource "aviatrix_transit_external_device_conn" "fake_onprem" {
   enable_ikev2      = true
   bgp_local_as_num  = var.transit_gw_asn
   bgp_remote_as_num = var.fake_onprem_asn
-  remote_gateway_ip = aws_eip.vpn_vm_eip.address
+  remote_gateway_ip = aws_eip.vpn_vm_eip.public_ip
   pre_shared_key    = resource.random_string.psk.result
 }
 
@@ -114,7 +114,7 @@ echo "s/:hagw:/${var.transit_gw_ips[1]}/g"
 echo "s/:psk:/${resource.random_string.psk.result}/g"
 echo "s/:remote-as:/${var.fake_onprem_asn}/g"
 echo "s/:myprivateip:/$(ec2metadata --local-ipv4)/g"
-echo "s/:mypublicip:/$(curl ifconfig.me)/g"
+echo "s/:mypublicip:/${aws_eip.vpn_vm_eip.public_ip}/g"
 echo "s/:gw-tun:/${local.vti_gw}/g"
 echo "s/:hagw-tun:/${local.vti_hagw}/g"
 } >/tmp/vars.$$
