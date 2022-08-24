@@ -15,16 +15,6 @@ resource "aviatrix_transit_external_device_conn" "fake_onprem" {
   remote_gateway_ip = aws_eip.vpn_vm_eip.address
 }
 
-# Set up the tunnel IPs for the ipsec-vti.sh script
-locals {
-  local_tunnel_cidr  = split(",", aviatrix_transit_external_device_conn.fake_onprem.local_tunnel_cidr)
-  remote_tunnel_cidr = split(",", aviatrix_transit_external_device_conn.fake_onprem.remote_tunnel_cidr)
-  vti_gw             = "${local.remote_tunnel_cidr[0]} ${local.local_tunnel_cidr[0]}"
-  vti_hagw           = "${local.remote_tunnel_cidr[1]} ${local.local_tunnel_cidr[1]}"
-  vpn_subnet         = cidrsubnet(var.cidr, 1, 0)
-  test_subnet        = cidrsubnet(var.cidr, 1, 1)
-}
-
 # AWS VPC for StrongSwan/FRR
 module "fake_onprem_vpc" {
   source = "terraform-aws-modules/vpc/aws"
@@ -50,14 +40,14 @@ resource "aws_security_group" "vpn_vm_sg" {
     from_port   = 500
     to_port     = 500
     protocol    = "UDP"
-    cidr_blocks = var.transit_gw_ips
+    cidr_blocks = local.transit_gw_ips_as_cidrs
   }
 
   ingress {
     from_port   = 4500
     to_port     = 4500
     protocol    = "UDP"
-    cidr_blocks = var.transit_gw_ips
+    cidr_blocks = local.transit_gw_ips_as_cidrs
   }
 
   ingress {
