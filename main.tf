@@ -133,7 +133,7 @@ echo "s/:myprivateip:/$(ec2metadata --local-ipv4)/g"
 echo "s/:mypublicip:/${aws_eip.vpn_vm_eip.public_ip}/g"
 echo "s/:gw-tun:/${local.vti_gw}/g"
 echo "s/:hagw-tun:/${local.vti_hagw}/g"
-} >/tmp/vars.$$
+} >/tmp/vars.txt
 
 # Install StrongSwan/FRR
 apt update
@@ -154,8 +154,8 @@ curl https://raw.githubusercontent.com/MatthewKazmar/avxfakeonprem/main/ipsec.co
 curl https://raw.githubusercontent.com/MatthewKazmar/avxfakeonprem/main/ipsec.secrets -o /etc/ipsec.secrets
 
 # Update Strongswan files
-sed -i -f /tmp/vars.$$ /etc/ipsec.conf
-sed -i -f /tmp/vars.$$ /etc/ipsec.secrets
+sed -i -f /tmp/vars.txt /etc/ipsec.conf
+sed -i -f /tmp/vars.txt /etc/ipsec.secrets
 
 # Start StrongSwan
 systemctl start strongswan-starter
