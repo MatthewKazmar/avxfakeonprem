@@ -179,6 +179,7 @@ network ${local.test_subnet}
 end
 wr mem
 '
+EOF
 }
 
 resource "aws_eip_association" "vpn_vm_eip_association" {
