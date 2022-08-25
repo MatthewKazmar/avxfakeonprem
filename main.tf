@@ -168,8 +168,7 @@ sed -i 's/#frr_profile="datacenter"/frr_profile="datacenter"/g' /etc/frr/daemons
 systemctl start frr
 
 # Configure BGP
-vtysh -c $(cat << EOS
-configure
+vtysh -c 'configure
 ip route ${local.test_subnet} ${cidrhost(local.vpn_subnet, 1)}
 router bgp ${var.fake_onprem_asn}
 neighbor ${local.neighbor_gw} remote-as ${var.transit_gw_asn}
@@ -179,9 +178,7 @@ network ${local.vpn_subnet}
 network ${local.test_subnet}
 end
 wr mem
-EOS
-)
-EOF
+'
 }
 
 resource "aws_eip_association" "vpn_vm_eip_association" {
