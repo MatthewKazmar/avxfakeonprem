@@ -71,10 +71,10 @@ resource "aws_security_group" "vpn_vm_sg" {
   }
 
   egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
-    cidr_blocks = [ "0.0.0.0/0" ]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
@@ -89,12 +89,12 @@ resource "aws_security_group" "test_vm_sg" {
     protocol    = "TCP"
     cidr_blocks = var.admin_cidrs
   }
-  
+
   egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
-    cidr_blocks = [ "0.0.0.0/0" ]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
@@ -172,8 +172,8 @@ frrcmds=$(cat << EOS
 configure
 ip route ${local.test_subnet} ${cidrhost(local.vpn_subnet, 1)}
 router bgp ${var.fake_onprem_asn}
-neighbor ${local.remote_tunnel_cidr[0]} remote-as ${var.transit_gw_asn}
-neighbor ${local.remote_tunnel_cidr[1]} remote-as ${var.transit_gw_asn}
+neighbor ${local.neighbor_gw} remote-as ${var.transit_gw_asn}
+neighbor ${local.neighbor_hagw} remote-as ${var.transit_gw_asn}
 address-family ipv4 unicast
 network ${local.vpn_subnet}
 network ${local.test_subnet}
