@@ -106,6 +106,8 @@ module "vpn_vm" {
   ]
 
   user_data = <<EOF
+#/bin/bash
+
 # Create sed template for ipsec.conf and frr.conf
 {
 echo "s/:gwname:/${var.transit_gw_name}/g"
