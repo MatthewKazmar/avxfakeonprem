@@ -168,7 +168,7 @@ sed -i 's/#frr_profile="datacenter"/frr_profile="datacenter"/g' /etc/frr/daemons
 systemctl start frr
 
 # Configure BGP
-frrcmds=$(cat << EOS
+vtysh -c $(cat << EOS
 configure
 ip route ${local.test_subnet} ${cidrhost(local.vpn_subnet, 1)}
 router bgp ${var.fake_onprem_asn}
@@ -181,7 +181,6 @@ end
 wr mem
 EOS
 )
-vtysh -c $frrcmds
 EOF
 }
 
