@@ -1,6 +1,6 @@
 output "vpn_vm_ip" {
   description = "Public IP of VPN VM"
-  value       = module.vpn_vm_eip.public_ip
+  value       = aws_eip.vpn_vm_eip.public_ip
 }
 
 output "test_vm_ip" {
