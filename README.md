@@ -4,8 +4,8 @@ Fake on-prem deployment with VPN to Aviatrix Transit
 Initial deploy to AWS Only
 
 # Build out fake onprem and connect to it.
-# A test Linux VM is created in another subnet.
-# Uses Ubuntu 22.04, FRR, Strongswan.
+A test Linux VM is created in another subnet.
+Uses Ubuntu 22.04, FRR, Strongswan.
 
 module "onprem" {
   source = "github.com/MatthewKazmar/avxfakeonprem"
