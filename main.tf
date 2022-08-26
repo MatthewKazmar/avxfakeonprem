@@ -98,6 +98,37 @@ resource "aws_security_group" "test_vm_sg" {
   }
 }
 
+# Test subnet RFC Routes
+resource "aws_route" "test_subnet_rfc_10" {
+  route_table_id         = public_route_table_ids[1]
+  destination_cidr_block = "10.0.0.0/8"
+  network_interface_id   = module.vpn_vm.primary_network_interface_id
+
+  depends_on = [
+    module.fake_onprem_vpc
+  ]
+}
+
+resource "aws_route" "test_subnet_rfc_172" {
+  route_table_id         = public_route_table_ids[1]
+  destination_cidr_block = "172.16.0.0/12"
+  network_interface_id   = module.vpn_vm.primary_network_interface_id
+
+  depends_on = [
+    module.fake_onprem_vpc
+  ]
+}
+
+resource "aws_route" "test_subnet_rfc_10" {
+  route_table_id         = public_route_table_ids[1]
+  destination_cidr_block = "192.168.0.0/16"
+  network_interface_id   = module.vpn_vm.primary_network_interface_id
+
+  depends_on = [
+    module.fake_onprem_vpc
+  ]
+}
+
 # Vpn VM
 module "vpn_vm" {
   source  = "terraform-aws-modules/ec2-instance/aws"
