@@ -8,6 +8,8 @@ variable "transit_gw_name" { type = string }
 variable "transit_gw_asn" { type = number }
 variable "fake_onprem_asn" { type = number }
 variable "key_name" { type = string }
+variable "tags" { type = map(any) }
+variable "volume_tags" { type = map(any) }
 
 # Set up the tunnel IPs for the ipsec-vti.sh script
 locals {

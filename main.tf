@@ -144,6 +144,10 @@ module "vpn_vm" {
   subnet_id              = module.fake_onprem_vpc.public_subnets[0]
   source_dest_check      = false
 
+
+  tags        = var.tags
+  volume_tags = var.volume_tags
+
   depends_on = [
     aws_eip.vpn_vm_eip,
     aws_security_group.vpn_vm_sg,
@@ -231,6 +235,9 @@ module "test_vm" {
   monitoring             = true
   vpc_security_group_ids = [aws_security_group.test_vm_sg.id]
   subnet_id              = module.fake_onprem_vpc.public_subnets[1]
+
+  tags        = var.tags
+  volume_tags = var.volume_tags
 
   depends_on = [
     aws_security_group.test_vm_sg
