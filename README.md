@@ -1,15 +1,14 @@
-# avxfakeonprem
-Fake on-prem deployment with VPN to Aviatrix Transit
+# avxfakeonprem  
+Fake on-prem deployment with VPN to Aviatrix Transit 
+Initial deploy to AWS Only  
 
-Initial deploy to AWS Only
+## Build out fake onprem and connect to it.  
+A test Linux VM is created in another subnet.  
+Uses Ubuntu 22.04, FRR, Strongswan.  
 
-# Build out fake onprem and connect to it.
-A test Linux VM is created in another subnet.
-Uses Ubuntu 22.04, FRR, Strongswan.
-
+```
 module "onprem" {
-  source = "github.com/MatthewKazmar/avxfakeonprem"
-
+  source          = "github.com/MatthewKazmar/avxfakeonprem"
   prefix          = local.pov_name
   aws_region      = var.aws_region
   cidr            = local.onprem_cidr
@@ -21,3 +20,4 @@ module "onprem" {
   fake_onprem_asn = var.onprem_asn
   key_name        = aws_key_pair.aws_key.key_name
 }
+```
